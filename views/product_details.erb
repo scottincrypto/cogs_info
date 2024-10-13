@@ -1,0 +1,22 @@
+<h1><%= @product['name'] %></h1>
+<p><%= @product['description'] %></p>
+
+<h2>Orders for this product since 2024-09-22:</h2>
+<% if @orders.empty? %>
+  <p>No orders found for this product since 2024-09-22.</p>
+<% else %>
+  <table>
+    <tr>
+      <th>Order #</th>
+      <th>Customer</th>
+      <th>Status</th>
+    </tr>
+    <% @orders.each do |order| %>
+      <tr>
+        <td><%= order['id'] %></td>
+        <td><%= order['customer']['name'] %> (<%= order['customer']['email'] %>)</td>
+        <td><%= order['status'] %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

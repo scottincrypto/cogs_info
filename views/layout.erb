@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WooCommerce Data</title>
+    <title>WooCommerce Order Viewer</title>
     <style>
+        body { font-family: Arial, sans-serif; }
         table {
             border-collapse: collapse;
             width: 100%;
@@ -21,12 +22,8 @@
 </head>
 <body>
     <nav>
-        <a href="/">Products</a> |
-        <a href="/orders">Orders</a> |
-        <a href="/customers">Customers</a>
+        <a href="/">Orders</a>
     </nav>
     <%= yield %>
 </body>
 </html>
-
-

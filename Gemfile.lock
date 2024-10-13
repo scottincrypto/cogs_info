@@ -104,7 +104,7 @@ DEPENDENCIES
   rackup
   sinatra
   solargraph
-  woocommerce_api
+  woocommerce_api (~> 1.4.0)
 
 BUNDLED WITH
    2.3.27

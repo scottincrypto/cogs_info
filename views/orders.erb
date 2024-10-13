@@ -1,18 +1,37 @@
 <h1>Orders</h1>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Status</th>
-        <th>Total</th>
-        <th>Customer</th>
-    </tr>
-    <% @orders.each do |order| %>
-        <tr>
-            <td><%= order['id'] %></td>
-            <td><%= order['status'] %></td>
-            <td><%= order['total'] %></td>
-            <td><%= order['billing']['first_name'] %> <%= order['billing']['last_name'] %></td>
-        </tr>
-    <% end %>
-</table>
 
+<table>
+  <thead>
+    <tr>
+      <th>Order #</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Customer</th>
+      <th>Items</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @orders.each do |order| %>
+      <tr>
+        <td><%= order['id'] %></td>
+        <td><%= DateTime.parse(order['date_created']).strftime('%Y-%m-%d %H:%M:%S') %></td>
+        <td><%= order['status'] %></td>
+        <td><%= order['customer']['name'] %> (<%= order['customer']['email'] %>)</td>
+        <td>
+          <ul>
+            <% order['line_items'].each do |item| %>
+              <li>
+                <a href="/product/<%= item['product_id'] %>">
+                  <%= item['name'] %>
+                  <% if item['variant'] %>
+                    - <%= item['variant']['attributes'].map { |attr| attr['option'] }.join(', ') %>
+                  <% end %>
+                </a>
+              </li>
+            <% end %>
+          </ul>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

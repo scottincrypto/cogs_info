@@ -1,0 +1,28 @@
+<h1>Orders for <%= @product_name %> since 2024-09-22</h1>
+
+<% if @orders.empty? %>
+  <p>No orders found for this product since 2024-09-22.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Variant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @orders.each do |order| %>
+        <tr>
+          <td><%= order['id'] %></td>
+          <td><%= DateTime.parse(order['date']).strftime('%Y-%m-%d %H:%M:%S') %></td>
+          <td><%= order['customer']['name'] %> (<%= order['customer']['email'] %>)</td>
+          <td><%= order['status'] %></td>
+          <td><%= order['variant'] || 'N/A' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
