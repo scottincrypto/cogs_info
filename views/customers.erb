@@ -1,0 +1,18 @@
+<h1>Customers</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Total Orders</th>
+    </tr>
+    <% @customers.each do |customer| %>
+        <tr>
+            <td><%= customer['id'] %></td>
+            <td><%= customer['first_name'] %> <%= customer['last_name'] %></td>
+            <td><%= customer['email'] %></td>
+            <td><%= customer['orders_count'] %></td>
+        </tr>
+    <% end %>
+</table>
+
