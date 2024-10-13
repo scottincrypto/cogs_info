@@ -11,7 +11,7 @@ WC_CONSUMER_SECRET = ENV['WOOCOMMERCE_CONSUMER_SECRET']
 
 # Filesystem cache settings
 CACHE_DIR = File.join(Dir.tmpdir, 'wc_api_cache')
-CACHE_EXPIRATION = 3600 # Cache expiration time in seconds (1 hour)
+CACHE_EXPIRATION = 600 # Cache expiration time in seconds (1 hour)
 
 FileUtils.mkdir_p(CACHE_DIR) unless File.directory?(CACHE_DIR)
 
@@ -33,9 +33,9 @@ def wc_api_request(endpoint, params = {})
   end
 end
 
+# Redirect root to orders
 get '/' do
-  @products = wc_api_request('products', per_page: 10)
-  erb :index
+  redirect '/orders'
 end
 
 get '/orders' do
@@ -70,17 +70,9 @@ get '/orders' do
     if customer_id && customer_id != 0
       customer = wc_api_request("customers/#{customer_id}")
       if customer && !customer.empty?
-        order['customer']['name'] = customer['first_name'] + ' ' + customer['last_name']
+        order['customer']['name'] = "#{customer['first_name']} #{customer['last_name']}".strip
         order['customer']['email'] = customer['email']
       end
-    end
-    
-    # If no customer data, use billing info
-    if !order['customer'] || order['customer'].empty?
-      order['customer'] = {
-        'name' => "#{order['billing']['first_name']} #{order['billing']['last_name']}".strip,
-        'email' => order['billing']['email']
-      }
     end
     
     # Fetch line items details
