@@ -25,5 +25,20 @@
         <a href="/">Orders</a>
     </nav>
     <%= yield %>
+
+    <script>
+        function updateTimestamp() {
+            const elements = document.querySelectorAll('.last-updated-time');
+            elements.forEach(element => {
+                const utcTime = element.getAttribute('data-utc-time');
+                if (utcTime && utcTime !== 'Never') {
+                    const localTime = new Date(utcTime).toLocaleString();
+                    element.textContent = localTime;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateTimestamp);
+    </script>
 </body>
 </html>

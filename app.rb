@@ -11,16 +11,18 @@ WC_CONSUMER_SECRET = ENV['WOOCOMMERCE_CONSUMER_SECRET']
 
 # Filesystem cache settings
 CACHE_DIR = File.join(Dir.tmpdir, 'wc_api_cache')
-CACHE_EXPIRATION = 600 # Cache expiration time in seconds (1 hour)
 
 FileUtils.mkdir_p(CACHE_DIR) unless File.directory?(CACHE_DIR)
 
-# Modified helper method to include filesystem caching
+# Add this near the top of the file, after other constants
+LAST_UPDATED_FILE = File.join(CACHE_DIR, 'last_updated.txt')
+
+# Modified helper method to use permanent caching
 def wc_api_request(endpoint, params = {})
   cache_key = Digest::MD5.hexdigest("#{endpoint}:#{params.to_json}")
   cache_file = File.join(CACHE_DIR, cache_key)
 
-  if File.exist?(cache_file) && File.mtime(cache_file) > Time.now - CACHE_EXPIRATION
+  if File.exist?(cache_file)
     JSON.parse(File.read(cache_file))
   else
     url = "#{WC_API_BASE_URL}/#{endpoint}"
@@ -29,8 +31,27 @@ def wc_api_request(endpoint, params = {})
     parsed_response = JSON.parse(response.body)
     
     File.write(cache_file, parsed_response.to_json)
+    update_last_updated_timestamp
     parsed_response
   end
+end
+
+# New helper method to update the last updated timestamp
+def update_last_updated_timestamp
+  File.write(LAST_UPDATED_FILE, Time.now.utc.iso8601)
+end
+
+# New helper method to get the last updated timestamp
+def get_last_updated
+  File.exist?(LAST_UPDATED_FILE) ? File.read(LAST_UPDATED_FILE) : 'Never'
+end
+
+# Add a new route to clear cache and redirect
+get '/clear_cache' do
+  FileUtils.rm_rf(CACHE_DIR)
+  FileUtils.mkdir_p(CACHE_DIR)
+  update_last_updated_timestamp
+  redirect back
 end
 
 # Redirect root to orders
@@ -39,6 +60,8 @@ get '/' do
 end
 
 get '/orders' do
+  @clear_cache_button = '<a href="/clear_cache" class="button">Clear cache & reload data</a>'
+  @last_updated = get_last_updated
   cutoff_date = Date.parse('2024-09-22')
   @orders = []
   page = 1
@@ -94,12 +117,14 @@ get '/orders' do
 end
 
 get '/customers' do
+  @clear_cache_button = '<a href="/clear_cache" class="button">Clear cache & reload data</a>'
   @customers = wc_api_request('customers', per_page: 20)
   erb :customers
 end
 
 # Route for product orders
 get '/product/:id' do
+  @clear_cache_button = '<a href="/clear_cache" class="button">Clear cache & reload data</a>'
   product_id = params[:id]
   @product_name = wc_api_request("products/#{product_id}")['name']
   

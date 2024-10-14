@@ -1,3 +1,8 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <div>Data last updated: <span class="last-updated-time" data-utc-time="<%= @last_updated %>"><%= @last_updated %></span></div>
+  <%= @clear_cache_button %>
+</div>
+
 <h1>Orders for <%= @product_name %> since 2024-09-22</h1>
 
 <% if @orders.empty? %>
