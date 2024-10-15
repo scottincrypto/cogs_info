@@ -16,6 +16,7 @@
         <th>Customer</th>
         <th>Status</th>
         <th>Variant</th>
+        <th>Quantity</th>
       </tr>
     </thead>
     <tbody>
@@ -26,6 +27,7 @@
           <td><%= order['customer']['name'] %> (<%= order['customer']['email'] %>)</td>
           <td><%= order['status'] %></td>
           <td><%= order['variant'] || 'N/A' %></td>
+          <td><%= order['quantity'] %></td>
         </tr>
       <% end %>
     </tbody>

@@ -110,6 +110,9 @@ get '/orders' do
           variation = wc_api_request("products/#{product_id}/variations/#{item['variation_id']}")
           item['variant'] = variation if variation
         end
+        
+        # Add quantity information
+        item['quantity'] = item['quantity']
       end
     end
   end
@@ -157,13 +160,17 @@ get '/product/:id' do
         end
       end
 
-      # Find the relevant line item and extract variant information
+      # Find the relevant line item and extract variant information and quantity
       line_item = order['line_items'].find { |item| item['product_id'].to_s == product_id }
       variant_info = nil
-      if line_item && line_item['variation_id'] && line_item['variation_id'] != 0
-        variant = wc_api_request("products/#{product_id}/variations/#{line_item['variation_id']}")
-        if variant && !variant.empty?
-          variant_info = variant['attributes'].map { |attr| attr['option'] }.join(', ')
+      quantity = 0
+      if line_item
+        quantity = line_item['quantity']
+        if line_item['variation_id'] && line_item['variation_id'] != 0
+          variant = wc_api_request("products/#{product_id}/variations/#{line_item['variation_id']}")
+          if variant && !variant.empty?
+            variant_info = variant['attributes'].map { |attr| attr['option'] }.join(', ')
+          end
         end
       end
 
@@ -172,7 +179,8 @@ get '/product/:id' do
         'customer' => customer_info,
         'status' => order['status'],
         'date' => order['date_created'],
-        'variant' => variant_info
+        'variant' => variant_info,
+        'quantity' => quantity
       }
     end
     
