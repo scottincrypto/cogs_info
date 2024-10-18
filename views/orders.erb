@@ -3,8 +3,9 @@
   <%= @clear_cache_button %>
 </div>
 
+<h1><%= @title || 'Orders' %></h1>
 
-<h1>Orders</h1>
+<p><%= @show_all_orders_link || '<a href="/processing_orders">Show Unfilled Orders</a>' %></p>
 
 <table>
   <thead>

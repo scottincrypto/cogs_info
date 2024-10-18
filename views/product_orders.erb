@@ -8,6 +8,16 @@
 <% if @orders.empty? %>
   <p>No orders found for this product since 2024-09-22.</p>
 <% else %>
+  <% puts "Debug: Product ID is #{@product_id} (#{@product_id.class})" %>
+  <% puts "Debug: Before sorting, first few variants: #{@orders.take(5).map { |o| o['variant'] }}" %>
+  <% if @product_id == "1581" %>
+    <% @orders = @orders.sort_by { |order| order['variant'] || '' } %>
+    <% puts "Debug: Sorting applied for product 1581" %>
+  <% else %>
+    <% puts "Debug: Sorting not applied (product ID is not 1581)" %>
+  <% end %>
+  <% puts "Debug: After potential sorting, first few variants: #{@orders.take(5).map { |o| o['variant'] }}" %>
+
   <table>
     <thead>
       <tr>
@@ -20,6 +30,7 @@
       </tr>
     </thead>
     <tbody>
+      <% total_quantity = 0 %>
       <% @orders.each do |order| %>
         <tr>
           <td><%= order['id'] %></td>
@@ -29,7 +40,12 @@
           <td><%= order['variant'] || 'N/A' %></td>
           <td><%= order['quantity'] %></td>
         </tr>
+        <% total_quantity += order['quantity'].to_i %>
       <% end %>
+      <tr>
+        <td colspan="5"><strong>Total</strong></td>
+        <td><strong><%= total_quantity %></strong></td>
+      </tr>
     </tbody>
   </table>
 <% end %>
